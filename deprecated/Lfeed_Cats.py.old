@@ -1,0 +1,22 @@
+# this is the file that runs to Feed the cats and gets executed from the Tkinter App or Web Gui
+import RPi.GPIO as GPIO
+import time
+
+servoPIN2 = 12
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(servoPIN2, GPIO.OUT)
+
+try:
+	leftFeeder = GPIO.PWM(servoPIN2, 50) # GPIO 12 for PWM with 50Hz
+	leftFeeder.start(2.5) # Initialization
+
+	leftFeeder.ChangeDutyCycle(1)
+	time.sleep(0.5)
+	leftFeeder.ChangeDutyCycle(0)
+	leftFeeder.stop()
+	GPIO.cleanup()
+
+except Exception as e:
+	GPIO.cleanup()                 # resets GPIO ports used back to input mode
+	print(str(e))
