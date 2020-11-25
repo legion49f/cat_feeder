@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 from os import listdir
+from time import sleep
 import tkinter as tk
 import time
 import threading
-# from gpiozero import Servo
+try:
+    from gpiozero import Servo
+except:
+    pass
 
 class Cat_Feeder(tk.Tk):
     def __init__(self) -> None:
@@ -22,10 +26,10 @@ class Cat_Feeder(tk.Tk):
         self.clock_label.place(relx=0.4,rely=0.01)
 
         self.cameraImage = tk.PhotoImage(file=r"camera.png")
-        self.camera_Button = tk.Button(self, text='Camera', image = self.cameraImage, bg='#d9c5e0', command=lambda : self.launchCamera )
+        self.camera_Button = tk.Button(self, text='Camera', image = self.cameraImage, bg='#d9c5e0', command=lambda : self.launch_camera() )
         self.camera_Button.place(relx=0.76,rely=0.018)
 
-        self.bfeedNow = tk.Button(self, text='Feed Now', font='ariel 20', command=lambda: feedNow() )
+        self.bfeedNow = tk.Button(self, text='Feed Now', font='ariel 20', command=lambda: self.feed_now() )
         self.bfeedNow.place(relx=0.68, rely=0.8)
 
         self.bexit = tk.Button(self, text='Exit', font='ariel 20', command=lambda: self.destroy() )
@@ -132,12 +136,15 @@ class Cat_Feeder(tk.Tk):
             self.writeChanges()
             self.upper_window.destroy()
 
-    def feedNow(self):
+    def feed_now(self):
         # print('kitty has been fed!') # change to log feed time here or email it for fun.
+        PINS = [12, 18]
         def doIt3():
             try:
-                exec(open("Lfeed_Cats.py").read())
-                exec(open("Rfeed_Cats.py").read())
+                for pin in PINS:
+                    servo = Servo(pin)
+                    servo.mid()
+                    time.sleep(1)
             except Exception as e:
                 with open('failedToFeed.txt', 'w') as info:
                     info.write('something went wrong with the servo')
